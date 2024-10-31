@@ -1,0 +1,29 @@
+.App-header {
+  min-height: 80px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background: #000;
+  
+  nav {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+    
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+main, .main-content {
+  margin-top: 80px;
+} 
