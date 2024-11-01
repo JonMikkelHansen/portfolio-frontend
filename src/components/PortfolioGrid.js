@@ -94,19 +94,21 @@ function PortfolioGrid() {
     const fetchCases = async () => {
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/cases?populate=*`;
-        console.log('Fetching from:', url); // Debug log
+        console.log('API URL:', process.env.REACT_APP_API_URL);
+        console.log('Token Preview:', process.env.REACT_APP_STRAPI_API_TOKEN?.substring(0, 5) + '...');
+        console.log('Fetching from:', url);
         
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${process.env.REACT_APP_STRAPI_API_TOKEN}`,
-            'Content-Type': 'application/json'
-          }
-        });
+        const headers = {
+          'Authorization': `Bearer ${process.env.REACT_APP_STRAPI_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        };
+        console.log('Authorization Header:', headers.Authorization);
+        
+        const response = await fetch(url, { headers });
         
         if (!response.ok) {
-          // Log the actual error response
-          const errorText = await response.text();
-          console.error('API Error Response:', errorText);
+          const errorData = await response.json();
+          console.log('API Error Response:', errorData);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
