@@ -1,5 +1,5 @@
 .App-header {
-  min-height: 80px;
+  min-height: 3.8rem;
   width: 100%;
   position: fixed;
   top: 0;
@@ -7,18 +7,42 @@
   z-index: 100;
   background: #000;
   
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .site-name {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+  }
+  
   nav {
     display: flex;
     gap: 2rem;
-    padding: 1rem;
+    align-items: center;
     
     .nav-link {
       color: white;
       text-decoration: none;
       transition: all 0.2s ease-in-out;
+      font-size: 1rem;
+      font-weight: 500;
       
       &:hover {
         text-decoration: underline;
+      }
+      
+      &:active {
+        color: #some-color;
       }
     }
   }

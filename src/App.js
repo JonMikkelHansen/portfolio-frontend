@@ -3,20 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import './styles/main.scss';
 import styled from 'styled-components';
 import PortfolioGrid from './components/PortfolioGrid';
-
-// You can still use Styled Components alongside SCSS
-const HeaderWrapper = styled.header`
-  background-color: #000000;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-`;
+import Header from './components/header';
 
 const MainContent = styled.main`
   background-color: #000000;
@@ -69,19 +56,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <HeaderWrapper>
-          <nav>
-            {singleTypes.map(type => (
-              <Link
-                key={type.uid}
-                to={`/${type.uid}`}
-                className="nav-link"
-              >
-                {type.displayName}
-              </Link>
-            ))}
-          </nav>
-        </HeaderWrapper>
+        <Header singleTypes={singleTypes} />
         
         <MainContent>
           <Routes>

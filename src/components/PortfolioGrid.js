@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import '../styles/components/PortfolioGrid.scss';
+import LightBox from './LightBox';
 
 const GridContainer = styled.div`
   width: 100%;
@@ -30,6 +31,17 @@ const Case = styled.div`
   opacity: 0;
   animation: fadeIn 0.5s ease-in forwards;
   animation-delay: ${props => props.index * 0.1}s;
+  
+  // Only add hover effects if case is clickable
+  ${props => props.isClickable && `
+    cursor: pointer;
+    
+    &:hover {
+      .thumbnail-overlay {
+        opacity: 0.3;
+      }
+    }
+  `}
   
   @media (min-width: 1024px) {
     grid-column: ${props => props.format === 'Wide' ? 'span 2' : 'span 1'};
@@ -61,10 +73,22 @@ const Thumbnail = styled.img`
   object-fit: cover;
 `;
 
+const ThumbnailOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+`;
+
 function PortfolioGrid() {
   const [cases, setCases] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const PRELOAD_COUNT = 5; // Number of images to preload
+  const [selectedCase, setSelectedCase] = useState(null);
 
   useEffect(() => {
     const preloadImages = async (items) => {
@@ -126,6 +150,16 @@ function PortfolioGrid() {
     fetchCases();
   }, []);
 
+  const handleCaseClick = (caseItem) => {
+    if (caseItem.Headline_media) {
+      setSelectedCase(caseItem);
+    }
+  };
+
+  const handleClose = () => {
+    setSelectedCase(null);
+  };
+
   if (isLoading) {
     return (
       <GridContainer>
@@ -147,6 +181,7 @@ function PortfolioGrid() {
         {Array.isArray(cases) && cases.map((item, index) => {
           const format = item.Format;
           const thumbnails = item.Thumbnails;
+          const isClickable = !!item.Headline_media;
           
           return (
             <Case 
@@ -154,18 +189,35 @@ function PortfolioGrid() {
               format={format}
               index={index}
               className="grid-item"
+              onClick={() => handleCaseClick(item)}
+              isClickable={isClickable}
             >
               {thumbnails && thumbnails.length > 0 && (
-                <Thumbnail 
-                  src={`${process.env.REACT_APP_API_URL}${thumbnails[0].url}`}
-                  alt={item.Title || ''}
-                  loading={index >= PRELOAD_COUNT ? "lazy" : "eager"}
-                />
+                <>
+                  <Thumbnail 
+                    src={thumbnails[0].url}
+                    alt={item.Title || ''}
+                    loading={index >= PRELOAD_COUNT ? "lazy" : "eager"}
+                  />
+                  {isClickable && <ThumbnailOverlay className="thumbnail-overlay" />}
+                </>
               )}
             </Case>
           );
         })}
       </Grid>
+
+      <LightBox 
+        isOpen={selectedCase !== null}
+        onClose={handleClose}
+        title={selectedCase?.Title}
+      >
+        {selectedCase && (
+          <div className="case-content">
+            {/* Your case content here */}
+          </div>
+        )}
+      </LightBox>
     </GridContainer>
   );
 }
