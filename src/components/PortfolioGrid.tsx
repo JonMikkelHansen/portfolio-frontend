@@ -37,6 +37,9 @@ const CaseItem = styled.div<{ format: string; index: number; isClickable: boolea
   cursor: ${props => props.isClickable ? 'pointer' : 'default'};
   aspect-ratio: ${props => props.format === 'Wide' ? '2/1' : '1/1'};
   grid-column: ${props => props.format === 'Wide' ? 'span 2' : 'span 1'};
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   
   &:hover .thumbnail-overlay {
     opacity: ${props => props.isClickable ? 1 : 0};
@@ -47,6 +50,12 @@ const Thumbnail = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `;
 
 const ThumbnailOverlay = styled.div`
@@ -140,6 +149,7 @@ function PortfolioGrid() {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const PRELOAD_COUNT = 5;
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [portfolioTitle, setPortfolioTitle] = useState<string>('');
 
   const isInteractive = (caseItem: Case) => {
     return !!(caseItem.Headline_media || (caseItem.Description && caseItem.Description.length > 0));
@@ -158,21 +168,27 @@ function PortfolioGrid() {
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        const url = `${process.env.REACT_APP_API_URL}/api/cases?populate[Thumbnails][fields]=url&populate[Headline_media][fields]=*&populate[Company][populate][Logo][fields]=url&populate[Company][fields]=*`;
+        const url = `${process.env.REACT_APP_API_URL}/api/portfolio?populate[cases][populate][0]=Thumbnails&populate[cases][populate][1]=Company.Logo&populate[cases][populate][2]=Headline_media`;
         
         const response = await fetch(url);
         const result = await response.json();
         
-        console.log('=== FULL API RESPONSE ===');
-        console.log(JSON.stringify(result, null, 2));
-        console.log('=== COMPANY WITH LOGO ===');
-        console.log(JSON.stringify(result.data?.[0]?.Company, null, 2));
+        console.log('=== PORTFOLIO DEBUG ===');
+        console.log('Full response:', result);
         
-        if (result.data) {
-          setCases(result.data);
+        // The cases are directly in result.data.cases
+        if (result.data?.cases && Array.isArray(result.data.cases)) {
+          console.log('Setting cases:', result.data.cases);
+          setCases(result.data.cases);
+        }
+
+        // Add title setting without breaking the working case fetch
+        if (result.data?.Title) {
+          setPortfolioTitle(result.data.Title);
+          document.title = result.data.Title;
         }
       } catch (error) {
-        console.error('Error fetching cases:', error);
+        console.error('Error fetching portfolio:', error);
       } finally {
         setIsLoading(false);
       }
