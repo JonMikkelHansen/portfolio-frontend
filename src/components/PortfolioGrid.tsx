@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import '../styles/components/PortfolioGrid.scss';
 import LightBox from './LightBox';
@@ -94,6 +94,14 @@ const CaseDescription = styled.div`
   white-space: pre-wrap;  // This preserves line breaks
 `;
 
+// Add this styled component for the video container
+const VideoContainer = styled.div`
+  width: 100%;
+  margin: 20px 0;
+  position: relative;
+  padding-top: 56.25%;  // 16:9 Aspect Ratio
+`;
+
 // First, let's update the type definitions
 interface CompanyLogo {
   url: string;
@@ -131,6 +139,7 @@ function PortfolioGrid() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const PRELOAD_COUNT = 5;
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const isInteractive = (caseItem: Case) => {
     return !!(caseItem.Headline_media || (caseItem.Description && caseItem.Description.length > 0));
@@ -171,6 +180,41 @@ function PortfolioGrid() {
 
     fetchCases();
   }, []);
+
+  useEffect(() => {
+    if (selectedCase?.Headline_media && videoRef.current) {
+      const cloudName = process.env.REACT_APP_CLOUDINARY_NAME;
+      console.log('Cloud name from env:', cloudName);
+      
+      if (!cloudName) {
+        console.error('Missing Cloudinary cloud name in environment variables');
+        return;
+      }
+      
+      const cloudinary = (window as any).cloudinary;
+      const player = cloudinary.videoPlayer(videoRef.current, {
+        cloud_name: cloudName,
+        controls: true,
+        fluid: true,
+      });
+      
+      console.log('=== DEBUG VIDEO INFO ===');
+      console.log('Full selectedCase:', selectedCase);
+      console.log('Headline media:', selectedCase.Headline_media);
+      
+      const source = {
+        publicId: selectedCase.Headline_media?.provider_metadata?.public_id || selectedCase.Headline_media,
+      };
+      
+      console.log('Source object:', source);
+      console.log('Player config:', {
+        cloud_name: cloudName,
+        source
+      });
+      
+      player.source(source);
+    }
+  }, [selectedCase]);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -221,6 +265,21 @@ function PortfolioGrid() {
       >
         {selectedCase && (
           <div className="case-content">
+            {selectedCase.Headline_media && (
+              <VideoContainer>
+                <video
+                  ref={videoRef}
+                  className="cld-video-player"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%'
+                  }}
+                />
+              </VideoContainer>
+            )}
             {selectedCase.Description?.map((block, index) => (
               <CaseDescription key={index}>
                 {block.children?.map((child: any, childIndex: number) => (
