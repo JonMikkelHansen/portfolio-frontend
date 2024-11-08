@@ -147,7 +147,7 @@ const LightboxContent = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 80px 40px 40px;
+  padding: 2rem 2rem;
 `;
 
 const ContentWrapper = styled.div`
@@ -292,6 +292,13 @@ function PortfolioGrid() {
                       {item.Company && (
                         <CompanyContainer>
                           <CompanyText>{item.Company.Name}</CompanyText>
+                          {item.Company.Logo?.[0]?.url && (
+                            <img 
+                              src={getImageUrl(item.Company.Logo[0].url)}
+                              alt={item.Company.Name}
+                              style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                            />
+                          )}
                         </CompanyContainer>
                       )}
                       <CaseTitle>{item.Title}</CaseTitle>
