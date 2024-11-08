@@ -42,24 +42,33 @@ export interface Company extends StrapiAttributes {
   Name: string;
 }
 
+interface RichTextChild {
+  text: string;
+  type: string;
+}
+
+interface RichTextBlock {
+  type: string;
+  children: RichTextChild[];
+}
+
 // Main Case type
 export interface Case {
   id: number;
   Title: string;
-  Format: 'Square' | 'Wide';
-  Description?: any[];
+  Short_description?: RichTextBlock[];
+  Format: string;
+  Description?: RichTextBlock[];
   Headline_media?: any;
-  Thumbnails?: { url: string }[];
+  Thumbnails?: Array<{
+    url: string;
+  }>;
   Company?: {
-    id: number;
     Name: string;
-    Logo?: { url: string }[];
+    Logo?: Array<{
+      url: string;
+    }>;
   };
-  Date: string | null;
-  Extra_media: any | null;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
 }
 
 // Response type

@@ -4,11 +4,12 @@ import '../styles/components/PortfolioGrid.scss';
 import LightBox from './LightBox';
 import { Case } from '../types/case';
 
-// Define prop types for styled components
-interface CaseItemProps {
-  format: 'Square' | 'Wide';
-  index: number;
-  isClickable: boolean;
+declare global {
+  interface Window {
+    cloudinary: {
+      videoPlayer: (element: HTMLElement, options: any) => any;
+    };
+  }
 }
 
 const GridContainer = styled.div`
@@ -22,11 +23,8 @@ const Grid = styled.div`
   display: grid;
   padding: 0;
   gap: 0;
-  
-  // Mobile (2 columns for 1:1, full width for 2:1)
   grid-template-columns: repeat(2, 1fr);
   
-  // Desktop (5 columns)
   @media (min-width: 1024px) {
     grid-template-columns: repeat(5, 1fr);
   }
@@ -34,15 +32,30 @@ const Grid = styled.div`
 
 const CaseItem = styled.div<{ format: string; index: number; isClickable: boolean }>`
   position: relative;
-  cursor: ${props => props.isClickable ? 'pointer' : 'default'};
-  aspect-ratio: ${props => props.format === 'Wide' ? '2/1' : '1/1'};
-  grid-column: ${props => props.format === 'Wide' ? 'span 2' : 'span 1'};
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  background: #2a2a2a;
+  grid-column: ${props => props.format === 'Wide' ? '1 / -1' : 'span 1'};
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in forwards;
+  animation-delay: ${props => props.index * 0.1}s;
   
-  &:hover .thumbnail-overlay {
-    opacity: ${props => props.isClickable ? 1 : 0};
+  ${props => props.isClickable && `
+    cursor: pointer;
+    
+    &:hover {
+      .case-overlay {
+        opacity: 1;
+      }
+    }
+  `}
+  
+  @media (min-width: 1024px) {
+    grid-column: ${props => props.format === 'Wide' ? 'span 2' : 'span 1'};
+  }
+  
+  &:before {
+    content: '';
+    display: block;
+    padding-top: ${props => props.format === 'Wide' ? '50%' : '100%'};
   }
 `;
 
@@ -58,89 +71,146 @@ const Thumbnail = styled.img`
   bottom: 0;
 `;
 
-const ThumbnailOverlay = styled.div`
+const CaseOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
   opacity: 0;
   transition: opacity 0.3s ease;
-  padding: 12px;
+  padding: 2rem;
+  color: white;
+`;
+
+const CaseTitle = styled.h3`
+  font-size: 1.125rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+  text-align: left;
+  position: absolute;
+  bottom: 3.5rem;
+  left: 2rem;
+`;
+
+const CaseDescription = styled.p`
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+  text-align: left;
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  max-width: 80%;
+`;
+
+const VideoContainer = styled.div`
+  width: 45%;
+  position: relative;
+  padding-top: 25.3125%;
+  margin: 0;
+`;
+
+const LightboxContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 2rem 2rem;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  gap: 40px;
+`;
+
+const TextContent = styled.div`
+  flex: 1;
+
+  h2 {
+    font-size: 24px;
+    margin: 0 0 20px 0;
+    color: #FFFFFF;
+  }
+
+  p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #FFFFFF;
+    margin-bottom: 16px;
+  }
+`;
+
+const CompanyHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 0 20px;
+`;
+
+const CompanyInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
 `;
 
 const CompanyLogo = styled.img`
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-  margin-left: 4px;
 `;
 
-const CompanyText = styled.span`
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-right: auto;
-  letter-spacing: 0.02em;
+const CompanyName = styled.span`
+  font-size: 14px;
+  color: #666;
 `;
 
 const CompanyContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
 `;
 
-// Add this styled component for the description
-const CaseDescription = styled.div`
+const CompanyText = styled.span`
+  font-size: 14px;
   color: white;
-  margin-top: 20px;
-  font-size: 1rem;
-  line-height: 1.5;
-  white-space: pre-wrap;  // This preserves line breaks
 `;
 
-// Add this styled component for the video container
-const VideoContainer = styled.div`
-  width: 100%;
-  margin: 20px 0;
-  position: relative;
-  padding-top: 56.25%;  // 16:9 Aspect Ratio
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 24px;
+  cursor: pointer;
 `;
 
-// First, let's update the type definitions
-interface CompanyLogo {
-  url: string;
-  // ... other fields
-}
-
-interface Company {
-  id: number;
-  Name: string;
-  Logo?: CompanyLogo[];
-  // ... other fields
-}
-
-// Update the helper functions
-const hasCompanyLogo = (company: any) => {
-  if (!company) return false;
+const renderRichText = (content: any) => {
+  if (!Array.isArray(content)) return null;
   
-  console.log('Checking logo for company:', company);  // Debug log
-  
-  return company?.Logo && 
-         Array.isArray(company.Logo) && 
-         company.Logo.length > 0 && 
-         company.Logo[0]?.url;
+  return content.map((block, index) => {
+    if (block.type === 'paragraph' && block.children) {
+      return (
+        <p key={index}>
+          {block.children.map((child: any, childIndex: number) => (
+            <span key={childIndex}>{child.text}</span>
+          ))}
+        </p>
+      );
+    }
+    return null;
+  });
 };
 
-const getCompanyName = (company: any) => {
-  if (company?.Name) {
-    return company.Name;
+const getImageUrl = (url: string) => {
+  if (url.startsWith('http')) {
+    return url;  // Already a full URL (Cloudinary)
   }
-  return 'No Company';
+  return `${process.env.REACT_APP_API_URL}${url}`; // Local URL
 };
 
 function PortfolioGrid() {
@@ -153,6 +223,14 @@ function PortfolioGrid() {
 
   const isInteractive = (caseItem: Case) => {
     return !!(caseItem.Headline_media || (caseItem.Description && caseItem.Description.length > 0));
+  };
+
+  const hasCompanyLogo = (company: Case['Company']) => {
+    return company?.Logo && Array.isArray(company.Logo) && company.Logo.length > 0 && company.Logo[0]?.url;
+  };
+
+  const getCompanyName = (company: Case['Company']) => {
+    return company?.Name || 'No Company';
   };
 
   const handleCaseClick = (caseItem: Case) => {
@@ -200,33 +278,30 @@ function PortfolioGrid() {
   useEffect(() => {
     if (selectedCase?.Headline_media && videoRef.current) {
       const cloudName = process.env.REACT_APP_CLOUDINARY_NAME;
-      console.log('Cloud name from env:', cloudName);
-      
       if (!cloudName) {
-        console.error('Missing Cloudinary cloud name in environment variables');
+        console.error('Cloudinary cloud name not found');
         return;
       }
-      
-      const cloudinary = (window as any).cloudinary;
-      const player = cloudinary.videoPlayer(videoRef.current, {
+
+      const player = window.cloudinary.videoPlayer(videoRef.current, {
         cloud_name: cloudName,
         controls: true,
         fluid: true,
+        loop: true,
+        playsinline: true,
+        muted: true,
+        transformation: {
+          width: 1920,
+          crop: "fill"
+        },
+        buttonBehavior: {
+          fullscreen: 'always'
+        }
       });
-      
-      console.log('=== DEBUG VIDEO INFO ===');
-      console.log('Full selectedCase:', selectedCase);
-      console.log('Headline media:', selectedCase.Headline_media);
       
       const source = {
         publicId: selectedCase.Headline_media?.provider_metadata?.public_id || selectedCase.Headline_media,
       };
-      
-      console.log('Source object:', source);
-      console.log('Player config:', {
-        cloud_name: cloudName,
-        source
-      });
       
       player.source(source);
     }
@@ -237,73 +312,90 @@ function PortfolioGrid() {
   return (
     <GridContainer>
       <Grid>
-        {cases.map((item, index) => (
-          <CaseItem 
-            key={item.id} 
-            format={item.Format}
-            index={index}
-            className="grid-item"
-            onClick={() => handleCaseClick(item)}
-            isClickable={isInteractive(item)}
-          >
-            {item.Thumbnails?.[0] && (
-              <>
-                <Thumbnail 
-                  src={item.Thumbnails[0].url}
-                  alt={item.Title || ''}
-                  loading={index >= PRELOAD_COUNT ? "lazy" : "eager"}
-                />
-                {isInteractive(item) && (
-                  <ThumbnailOverlay className="thumbnail-overlay">
-                    <CompanyContainer>
-                      <CompanyText>
-                        {getCompanyName(item.Company)}
-                      </CompanyText>
-                      {hasCompanyLogo(item.Company) && (
-                        <CompanyLogo 
-                          src={item.Company?.Logo?.[0]?.url || ''} 
-                          alt={getCompanyName(item.Company)}
-                        />
+        {Array.isArray(cases) && cases.map((item, index) => {
+          const isClickable = isInteractive(item);
+          const thumbnailUrl = item.Thumbnails?.[0]?.url;
+          console.log('Thumbnail data:', item.Thumbnails?.[0]);
+          
+          return (
+            <CaseItem 
+              key={item.id} 
+              format={item.Format}
+              index={index}
+              isClickable={isClickable}
+              onClick={() => isClickable && handleCaseClick(item)}
+            >
+              {thumbnailUrl && (
+                <>
+                  <Thumbnail 
+                    src={getImageUrl(thumbnailUrl)}
+                    alt={item.Title || ''}
+                    loading={index >= PRELOAD_COUNT ? "lazy" : "eager"}
+                    onError={(e) => {
+                      console.error('Image failed to load:', e);
+                      console.log('Image URL:', getImageUrl(thumbnailUrl));
+                    }}
+                  />
+                  {isClickable && (
+                    <CaseOverlay className="case-overlay">
+                      {item.Company && (
+                        <CompanyContainer>
+                          <CompanyText>{item.Company.Name}</CompanyText>
+                          {item.Company.Logo?.[0]?.url && (
+                            <CompanyLogo 
+                              src={getImageUrl(item.Company.Logo[0].url)}
+                              alt={item.Company.Name}
+                            />
+                          )}
+                        </CompanyContainer>
                       )}
-                    </CompanyContainer>
-                  </ThumbnailOverlay>
-                )}
-              </>
-            )}
-          </CaseItem>
-        ))}
+                      <CaseTitle>{item.Title}</CaseTitle>
+                      {item.Short_description?.[0]?.children?.[0]?.text && (
+                        <CaseDescription>
+                          {item.Short_description[0].children[0].text}
+                        </CaseDescription>
+                      )}
+                    </CaseOverlay>
+                  )}
+                </>
+              )}
+            </CaseItem>
+          );
+        })}
       </Grid>
 
       <LightBox 
         isOpen={selectedCase !== null}
         onClose={handleClose}
-        title={selectedCase?.Title}
+        title={null}
+        companyName={selectedCase?.Company?.Name}
+        companyLogo={selectedCase?.Company?.Logo?.[0]?.url ? getImageUrl(selectedCase.Company.Logo[0].url) : undefined}
       >
         {selectedCase && (
-          <div className="case-content">
-            {selectedCase.Headline_media && (
-              <VideoContainer>
-                <video
-                  ref={videoRef}
-                  className="cld-video-player"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%'
-                  }}
-                />
-              </VideoContainer>
-            )}
-            {selectedCase.Description?.map((block, index) => (
-              <CaseDescription key={index}>
-                {block.children?.map((child: any, childIndex: number) => (
-                  <p key={childIndex}>{child.text}</p>
-                ))}
-              </CaseDescription>
-            ))}
-          </div>
+          <LightboxContent>
+            <ContentWrapper>
+              {selectedCase.Headline_media && (
+                <VideoContainer>
+                  <video
+                    ref={videoRef}
+                    className="cld-video-player"
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%'
+                    }}
+                  />
+                </VideoContainer>
+              )}
+              
+              <TextContent>
+                <h2>{selectedCase.Title}</h2>
+                {renderRichText(selectedCase.Description)}
+              </TextContent>
+            </ContentWrapper>
+          </LightboxContent>
         )}
       </LightBox>
     </GridContainer>

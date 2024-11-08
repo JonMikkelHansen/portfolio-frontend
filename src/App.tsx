@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import './styles/main.scss';
 import styled from 'styled-components';
 import PortfolioGrid from './components/PortfolioGrid';
-import Header from './components/header';
+import Header from './components/Header';
 
 const MainContent = styled.main`
   background-color: #000000;
@@ -11,8 +11,13 @@ const MainContent = styled.main`
   min-height: calc(100vh - 60px);
 `;
 
+interface SingleType {
+  uid: string;
+  displayName: string;
+}
+
 function App() {
-  const [singleTypes, setSingleTypes] = useState([]);
+  const [singleTypes, setSingleTypes] = useState<SingleType[]>([]);
 
   useEffect(() => {
     const fetchSingleTypes = async () => {

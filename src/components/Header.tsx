@@ -1,13 +1,22 @@
 import { Link } from 'react-router-dom';
 import '../styles/components/_header.scss';
 
-function Header({ singleTypes }) {
+interface SingleType {
+  uid: string;
+  displayName: string;
+}
+
+interface HeaderProps {
+  singleTypes: SingleType[];
+}
+
+function Header({ singleTypes }: HeaderProps) {
   return (
     <header className="App-header">
       <div className="header-content">
         <Link to="/" className="site-name">JONMIKKELHANSEN</Link>
         <nav>
-          {singleTypes.map(type => (
+          {singleTypes.map((type: SingleType) => (
             <Link
               key={type.uid}
               to={`/${type.uid}`}
