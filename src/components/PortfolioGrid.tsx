@@ -112,18 +112,6 @@ const VideoContainer = styled.div`
   margin: 0;
 `;
 
-const LightboxContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 2rem 2rem;
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  gap: 40px;
-`;
-
 const TextContent = styled.div`
   flex: 1;
 
@@ -141,32 +129,6 @@ const TextContent = styled.div`
   }
 `;
 
-const CompanyHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 20px;
-  padding: 0 20px;
-`;
-
-const CompanyInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-`;
-
-const CompanyLogo = styled.img`
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-`;
-
-const CompanyName = styled.span`
-  font-size: 14px;
-  color: #666;
-`;
-
 const CompanyContainer = styled.div`
   display: flex;
   align-items: center;
@@ -181,12 +143,16 @@ const CompanyText = styled.span`
   color: white;
 `;
 
-const CloseButton = styled.button`
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 24px;
-  cursor: pointer;
+const LightboxContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 80px 40px 40px;
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  gap: 40px;
 `;
 
 const renderRichText = (content: any) => {
@@ -219,18 +185,9 @@ function PortfolioGrid() {
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
   const PRELOAD_COUNT = 5;
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [portfolioTitle, setPortfolioTitle] = useState<string>('');
 
   const isInteractive = (caseItem: Case) => {
     return !!(caseItem.Headline_media || (caseItem.Description && caseItem.Description.length > 0));
-  };
-
-  const hasCompanyLogo = (company: Case['Company']) => {
-    return company?.Logo && Array.isArray(company.Logo) && company.Logo.length > 0 && company.Logo[0]?.url;
-  };
-
-  const getCompanyName = (company: Case['Company']) => {
-    return company?.Name || 'No Company';
   };
 
   const handleCaseClick = (caseItem: Case) => {
@@ -258,12 +215,6 @@ function PortfolioGrid() {
         if (result.data?.cases && Array.isArray(result.data.cases)) {
           console.log('Setting cases:', result.data.cases);
           setCases(result.data.cases);
-        }
-
-        // Add title setting without breaking the working case fetch
-        if (result.data?.Title) {
-          setPortfolioTitle(result.data.Title);
-          document.title = result.data.Title;
         }
       } catch (error) {
         console.error('Error fetching portfolio:', error);
@@ -341,12 +292,6 @@ function PortfolioGrid() {
                       {item.Company && (
                         <CompanyContainer>
                           <CompanyText>{item.Company.Name}</CompanyText>
-                          {item.Company.Logo?.[0]?.url && (
-                            <CompanyLogo 
-                              src={getImageUrl(item.Company.Logo[0].url)}
-                              alt={item.Company.Name}
-                            />
-                          )}
                         </CompanyContainer>
                       )}
                       <CaseTitle>{item.Title}</CaseTitle>

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/main.scss';
 import styled from 'styled-components';
 import PortfolioGrid from './components/PortfolioGrid';
@@ -59,7 +59,7 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
+    <Router>
       <div className="App">
         <Header singleTypes={singleTypes} />
         
@@ -73,7 +73,7 @@ function App() {
           </Routes>
         </MainContent>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 }
 
