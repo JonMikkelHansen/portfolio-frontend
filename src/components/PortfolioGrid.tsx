@@ -110,6 +110,12 @@ const VideoContainer = styled.div`
   position: relative;
   padding-top: 25.3125%;
   margin: 0;
+
+  @media (max-width: 768px) {
+    width: calc(100% - 16px);  // Full width minus scrollbar
+    padding-top: 56.25%;  // 16:9 aspect ratio
+    margin: 0 8px;  // Center the video
+  }
 `;
 
 const TextContent = styled.div`
@@ -126,6 +132,20 @@ const TextContent = styled.div`
     line-height: 1.6;
     color: #FFFFFF;
     margin-bottom: 16px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+    
+    h2 {
+      font-size: 20px;
+      margin: 16px 0;
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.5;
+    }
   }
 `;
 
@@ -148,11 +168,20 @@ const LightboxContent = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 2rem 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem 0 0;  // Top padding for header
+  }
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   gap: 40px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+  }
 `;
 
 const renderRichText = (content: any) => {
@@ -240,7 +269,8 @@ function PortfolioGrid() {
         fluid: true,
         loop: true,
         playsinline: true,
-        muted: true,
+        muted: false,
+        showLogo: false,
         transformation: {
           width: 1920,
           crop: "fill"
