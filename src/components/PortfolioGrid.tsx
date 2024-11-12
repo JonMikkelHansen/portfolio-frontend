@@ -80,28 +80,25 @@ const CaseOverlay = styled.div`
   background: rgba(0, 0, 0, 0.85);
   opacity: 0;
   transition: opacity 0.3s ease;
-  padding: 2rem;
+  padding: 1rem;
   color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 `;
 
 const CaseTitle = styled.h3`
   font-size: 1.125rem;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   font-weight: 500;
   text-align: left;
-  position: absolute;
-  bottom: 3.5rem;
-  left: 2rem;
 `;
 
 const CaseDescription = styled.p`
   font-size: 0.875rem;
-  margin: 0;
+  margin: 0.5rem 0 0 0;
   line-height: 1.4;
   text-align: left;
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
   max-width: 80%;
 `;
 

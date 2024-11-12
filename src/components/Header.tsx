@@ -14,7 +14,7 @@ function Header({ singleTypes }: HeaderProps) {
   return (
     <header className="App-header">
       <div className="header-content">
-        <Link to="/" className="site-name">JONMIKKELHANSEN</Link>
+        <Link to="/" className="site-name">JON<span className="emphasis">MIKKEL</span>HANSEN</Link>
         <nav>
           {singleTypes.map((type: SingleType) => (
             <Link
