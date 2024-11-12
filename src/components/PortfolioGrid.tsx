@@ -30,7 +30,7 @@ const Grid = styled.div`
   }
 `;
 
-const CaseItem = styled.div<{ format: string; index: number; isClickable: boolean }>`
+const CaseItem = styled.div<{ format: string; index: number; isClickable: boolean; isExternal?: boolean }>`
   position: relative;
   background: #2a2a2a;
   grid-column: ${props => props.format === 'Wide' ? '1 / -1' : 'span 1'};
@@ -38,7 +38,7 @@ const CaseItem = styled.div<{ format: string; index: number; isClickable: boolea
   animation: fadeIn 0.5s ease-in forwards;
   animation-delay: ${props => props.index * 0.1}s;
   
-  ${props => props.isClickable && `
+  ${props => !props.isExternal && props.isClickable && `
     cursor: pointer;
     
     &:hover {
@@ -262,16 +262,16 @@ function PortfolioGrid() {
         const response = await fetch(url);
         const result = await response.json();
         
-        console.log('=== PORTFOLIO DEBUG ===');
-        console.log('Full response:', result);
+        //console.log('=== PORTFOLIO DEBUG ===');
+        //console.log('Full response:', result);
         
         // The cases are directly in result.data.cases
         if (result.data?.cases && Array.isArray(result.data.cases)) {
-          console.log('Setting cases:', result.data.cases);
+          //console.log('Setting cases:', result.data.cases);
           setCases(result.data.cases);
         }
       } catch (error) {
-        console.error('Error fetching portfolio:', error);
+        //console.error('Error fetching portfolio:', error);
       } finally {
         setIsLoading(false);
       }
@@ -284,7 +284,7 @@ function PortfolioGrid() {
     if (selectedCase?.Headline_media && videoRef.current) {
       const cloudName = process.env.REACT_APP_CLOUDINARY_NAME;
       if (!cloudName) {
-        console.error('Cloudinary cloud name not found');
+        //console.error('Cloudinary cloud name not found');
         return;
       }
 
@@ -319,16 +319,16 @@ function PortfolioGrid() {
     <GridContainer>
       <Grid>
         {Array.isArray(cases) && cases.map((item, index) => {
-          const isClickable = isInteractive(item);
+          const isClickable = isInteractive(item) && !item.External_link;
           const thumbnailUrl = item.Thumbnails?.[0]?.url;
-          console.log('Thumbnail data:', item.Thumbnails?.[0]);
           
-          return (
+          const caseContent = (
             <CaseItem 
               key={item.id} 
               format={item.Format}
               index={index}
               isClickable={isClickable}
+              isExternal={!!item.External_link}
               onClick={() => isClickable && handleCaseClick(item)}
             >
               {thumbnailUrl && (
@@ -338,8 +338,8 @@ function PortfolioGrid() {
                     alt={item.Title || ''}
                     loading={index >= PRELOAD_COUNT ? "lazy" : "eager"}
                     onError={(e) => {
-                      console.error('Image failed to load:', e);
-                      console.log('Image URL:', getImageUrl(thumbnailUrl));
+                      //console.error('Image failed to load:', e);
+                      //console.log('Image URL:', getImageUrl(thumbnailUrl));
                     }}
                   />
                   {isClickable && (
@@ -368,6 +368,18 @@ function PortfolioGrid() {
               )}
             </CaseItem>
           );
+
+          return item.External_link ? (
+            <a 
+              key={item.id}
+              href={item.External_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'contents' }}
+            >
+              {caseContent}
+            </a>
+          ) : caseContent;
         })}
       </Grid>
 

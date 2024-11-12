@@ -66,10 +66,7 @@ interface Media {
 export interface Case {
   id: number;
   Title: string;
-  Short_description?: RichTextBlock[];
   Format: string;
-  Description?: RichTextBlock[];
-  Headline_media?: Media;
   Thumbnails?: Array<{
     url: string;
   }>;
@@ -79,6 +76,16 @@ export interface Case {
       url: string;
     }>;
   };
+  Description?: any[];
+  Short_description?: any[];
+  Headline_media?: {
+    url?: string;
+    caption?: string;
+    provider_metadata?: {
+      public_id: string;
+    };
+  };
+  External_link?: string;
 }
 
 // Response type
