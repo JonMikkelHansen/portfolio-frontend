@@ -106,20 +106,32 @@ const CaseDescription = styled.p`
 `;
 
 const VideoContainer = styled.div`
-  width: 45%;
+  width: 100%;
   position: relative;
-  padding-top: 25.3125%;
+  padding-top: 56.25%;
   margin: 0;
 
   @media (max-width: 768px) {
-    width: calc(100% - 16px);  // Full width minus scrollbar
-    padding-top: 56.25%;  // 16:9 aspect ratio
-    margin: 0 8px;  // Center the video
+    width: calc(100% - 16px);
+    margin: 0 8px;
+  }
+`;
+
+const VideoCaption = styled.p`
+  font-size: 12px;
+  font-style: italic;
+  color: #FFFFFF;
+  margin: 8px 0 0;
+  opacity: 0.8;
+  
+  @media (max-width: 768px) {
+    margin: 4px 8px 0;
   }
 `;
 
 const TextContent = styled.div`
   flex: 1;
+  width: 50%;
 
   h2 {
     font-size: 24px;
@@ -135,6 +147,7 @@ const TextContent = styled.div`
   }
 
   @media (max-width: 768px) {
+    width: 100%;
     padding: 0 16px;
     
     h2 {
@@ -182,6 +195,21 @@ const ContentWrapper = styled.div`
     flex-direction: column;
     gap: 0;
   }
+`;
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const VideoWrapper = styled.div`
+  position: relative;
+  width: 100%;
 `;
 
 const renderRichText = (content: any) => {
@@ -356,22 +384,28 @@ function PortfolioGrid() {
         {selectedCase && (
           <LightboxContent>
             <ContentWrapper>
-              {selectedCase.Headline_media && (
-                <VideoContainer>
-                  <video
-                    ref={videoRef}
-                    className="cld-video-player"
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%'
-                    }}
-                  />
-                </VideoContainer>
-              )}
-              
+              <LeftColumn>
+                {selectedCase.Headline_media && (
+                  <VideoWrapper>
+                    <VideoContainer>
+                      <video
+                        ref={videoRef}
+                        className="cld-video-player"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%'
+                        }}
+                      />
+                    </VideoContainer>
+                    {selectedCase.Headline_media.caption && (
+                      <VideoCaption>{selectedCase.Headline_media.caption}</VideoCaption>
+                    )}
+                  </VideoWrapper>
+                )}
+              </LeftColumn>
               <TextContent>
                 <h2>{selectedCase.Title}</h2>
                 {renderRichText(selectedCase.Description)}

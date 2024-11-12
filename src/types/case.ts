@@ -52,6 +52,16 @@ interface RichTextBlock {
   children: RichTextChild[];
 }
 
+// Update your Media type or wherever Headline_media is defined
+interface Media {
+  url: string;
+  caption?: string;
+  provider_metadata?: {
+    public_id: string;
+  };
+  // ... other existing properties
+}
+
 // Main Case type
 export interface Case {
   id: number;
@@ -59,7 +69,7 @@ export interface Case {
   Short_description?: RichTextBlock[];
   Format: string;
   Description?: RichTextBlock[];
-  Headline_media?: any;
+  Headline_media?: Media;
   Thumbnails?: Array<{
     url: string;
   }>;
