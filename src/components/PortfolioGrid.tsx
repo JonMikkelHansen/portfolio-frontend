@@ -297,19 +297,19 @@ function PortfolioGrid() {
       try {
         const url = `${process.env.REACT_APP_API_URL}/api/portfolio?populate[cases][populate][0]=Thumbnails&populate[cases][populate][1]=Company.Logo&populate[cases][populate][2]=Headline_media`;
         
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${process.env.REACT_APP_STRAPI_API_TOKEN}`
-          }
-        });
-        
+        const response = await fetch(url);
         const result = await response.json();
         
+        //console.log('=== PORTFOLIO DEBUG ===');
+        //console.log('Full response:', result);
+        
+        // The cases are directly in result.data.cases
         if (result.data?.cases && Array.isArray(result.data.cases)) {
+          //console.log('Setting cases:', result.data.cases);
           setCases(result.data.cases);
         }
       } catch (error) {
-        console.error('Error fetching portfolio:', error);
+        //console.error('Error fetching portfolio:', error);
       } finally {
         setIsLoading(false);
       }
