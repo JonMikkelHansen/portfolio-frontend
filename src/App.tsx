@@ -33,12 +33,7 @@ function App() {
         
         for (const type of typesToFetch) {
           const response = await fetch(
-            `${process.env.REACT_APP_API_URL}/api/${type.uid}?publicationState=live`,
-            {
-              headers: {
-                'Authorization': `Bearer ${process.env.REACT_APP_STRAPI_API_TOKEN}`
-              }
-            }
+            `${process.env.REACT_APP_API_URL}/api/${type.uid}?publicationState=live`
           );
           
           if (response.ok) {
