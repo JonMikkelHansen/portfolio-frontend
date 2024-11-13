@@ -7,18 +7,24 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 20px 40px;
-  position: fixed;
+  padding: 1.5rem 2rem;
+  background: rgba(0, 0, 0, 0.95);
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1001;
+  backdrop-filter: blur(5px);
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const CompanyInfo = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 `;
 
 const CompanyLogo = styled.img`
@@ -28,22 +34,31 @@ const CompanyLogo = styled.img`
 `;
 
 const CompanyName = styled.span`
-  font-size: 16px;
-  color: rgba(255, 255, 255, 1);
+  font-size: 1.125rem;
+  color: #FFFFFF;
+  font-weight: 400;
 `;
 
 const CloseButton = styled.button`
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 1);
+  color: #FFFFFF;
   font-size: 32px;
   cursor: pointer;
-  padding: 10px;
-  transition: color 0.3s ease;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
   
   &:hover {
-    color: rgba(255, 255, 255, 0.8);
+    opacity: 1;
   }
+`;
+
+const Content = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 80px 32px 32px;
 `;
 
 interface LightBoxProps {
@@ -59,8 +74,12 @@ function LightBox({ isOpen, onClose, companyName, companyLogo, children }: Light
   if (!isOpen) return null;
 
   return (
-    <div className="lightbox-overlay">
-      <div className="lightbox-content" onClick={e => e.stopPropagation()}>
+    <div className="lightbox-overlay" onClick={onClose}>
+      <div 
+        className="lightbox-content" 
+        onClick={e => e.stopPropagation()}
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <Header>
           <CompanyInfo>
             {companyLogo && (
@@ -71,9 +90,11 @@ function LightBox({ isOpen, onClose, companyName, companyLogo, children }: Light
             )}
             {companyName && <CompanyName>{companyName}</CompanyName>}
           </CompanyInfo>
-          <CloseButton onClick={onClose}>×</CloseButton>
+          <CloseButton onClick={onClose}>&times;</CloseButton>
         </Header>
-        {children}
+        <Content>
+          {children}
+        </Content>
       </div>
     </div>
   );

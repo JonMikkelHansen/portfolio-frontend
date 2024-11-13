@@ -30,7 +30,7 @@ const Grid = styled.div`
   }
 `;
 
-const CaseItem = styled.div<{ format: string; index: number; isClickable: boolean; isExternal?: boolean }>`
+const CaseItem = styled.div<{ format: string; index: number; $isClickable: boolean; $isExternal?: boolean }>`
   position: relative;
   background: #2a2a2a;
   grid-column: ${props => props.format === 'Wide' ? '1 / -1' : 'span 1'};
@@ -38,7 +38,7 @@ const CaseItem = styled.div<{ format: string; index: number; isClickable: boolea
   animation: fadeIn 0.5s ease-in forwards;
   animation-delay: ${props => props.index * 0.1}s;
   
-  ${props => !props.isExternal && props.isClickable && `
+  ${props => !props.$isExternal && props.$isClickable && `
     cursor: pointer;
     
     &:hover {
@@ -92,6 +92,11 @@ const CaseTitle = styled.h3`
   margin: 0;
   font-weight: 500;
   text-align: left;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
 `;
 
 const CaseDescription = styled.p`
@@ -143,18 +148,24 @@ const TextContent = styled.div`
     margin-bottom: 16px;
   }
 
+  a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.2s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   @media (max-width: 768px) {
     width: 100%;
-    padding: 0 16px;
-    
+    padding: 0 0.5rem;
+
     h2 {
       font-size: 20px;
-      margin: 16px 0;
-    }
-
-    p {
-      font-size: 14px;
-      line-height: 1.5;
+      margin: 32px 0 20px 0;
     }
   }
 `;
@@ -177,10 +188,10 @@ const LightboxContent = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 2rem 2rem;
-
+  padding: 1rem 2rem 2rem;
+  
   @media (max-width: 768px) {
-    padding: 1rem 0 0;  // Top padding for header
+    padding: 1rem 1rem 1rem;
   }
 `;
 
@@ -210,15 +221,27 @@ const VideoWrapper = styled.div`
 `;
 
 const renderRichText = (content: any) => {
-  if (!Array.isArray(content)) return null;
+  if (!content) return null;
   
-  return content.map((block, index) => {
-    if (block.type === 'paragraph' && block.children) {
+  return content.map((block: any, index: number) => {
+    if (block.type === 'paragraph') {
       return (
         <p key={index}>
-          {block.children.map((child: any, childIndex: number) => (
-            <span key={childIndex}>{child.text}</span>
-          ))}
+          {block.children.map((child: any, childIndex: number) => {
+            if (child.type === 'link' && child.url) {
+              return (
+                <a 
+                  key={childIndex} 
+                  href={child.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  {child.children[0].text}
+                </a>
+              );
+            }
+            return child.text;
+          })}
         </p>
       );
     }
@@ -327,8 +350,8 @@ function PortfolioGrid() {
               key={item.id} 
               format={item.Format}
               index={index}
-              isClickable={isClickable}
-              isExternal={!!item.External_link}
+              $isClickable={isClickable}
+              $isExternal={!!item.External_link}
               onClick={() => isClickable && handleCaseClick(item)}
             >
               {thumbnailUrl && (

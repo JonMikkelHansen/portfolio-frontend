@@ -44,11 +44,12 @@ export interface Company extends StrapiAttributes {
 
 interface RichTextChild {
   text: string;
-  type: string;
+  type?: 'text' | 'link';
+  url?: string;
 }
 
 interface RichTextBlock {
-  type: string;
+  type: 'paragraph';
   children: RichTextChild[];
 }
 
@@ -76,8 +77,8 @@ export interface Case {
       url: string;
     }>;
   };
-  Description?: any[];
-  Short_description?: any[];
+  Description?: RichTextBlock[];
+  Short_description?: RichTextBlock[];
   Headline_media?: {
     url?: string;
     caption?: string;

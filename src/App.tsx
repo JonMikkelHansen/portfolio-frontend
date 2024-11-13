@@ -23,8 +23,9 @@ function App() {
     const fetchSingleTypes = async () => {
       const typesToFetch = [
         { uid: 'portfolio', displayName: 'Portfolio' },
-        { uid: 'career', displayName: 'Career' },
-        { uid: 'personal', displayName: 'Personal' }
+        // Temporarily disabled types
+        // { uid: 'career', displayName: 'Career' },
+        // { uid: 'personal', displayName: 'Personal' }
       ];
       
       try {
@@ -65,11 +66,11 @@ function App() {
         
         <MainContent>
           <Routes>
-            {/* Routes remain the same */}
             <Route path="/" element={<Navigate to="/portfolio" replace />} />
             <Route path="/portfolio" element={<PortfolioGrid />} />
-            <Route path="/career" element={<div>Career Content</div>} />
-            <Route path="/personal" element={<div>Personal Content</div>} />
+            {/* Temporarily disabled routes */}
+            {/* <Route path="/career" element={<div>Career Content</div>} /> */}
+            {/* <Route path="/personal" element={<div>Personal Content</div>} /> */}
           </Routes>
         </MainContent>
       </div>
