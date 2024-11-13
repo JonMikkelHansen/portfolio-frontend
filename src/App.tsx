@@ -68,6 +68,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/portfolio" replace />} />
             <Route path="/portfolio" element={<PortfolioGrid />} />
+            <Route path="/portfolio/:caseId" element={<PortfolioGrid />} />
             {/* Temporarily disabled routes */}
             {/* <Route path="/career" element={<div>Career Content</div>} /> */}
             {/* <Route path="/personal" element={<div>Personal Content</div>} /> */}

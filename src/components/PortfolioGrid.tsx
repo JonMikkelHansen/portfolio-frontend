@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import '../styles/components/PortfolioGrid.scss';
 import LightBox from './LightBox';
 import { Case } from '../types/case';
+import { useParams, useNavigate } from 'react-router-dom';
+import { createSlug } from '../utils/helpers';
 
 declare global {
   interface Window {
@@ -257,6 +259,8 @@ const getImageUrl = (url: string) => {
 };
 
 function PortfolioGrid() {
+  const { caseId } = useParams();
+  const navigate = useNavigate();
   const [cases, setCases] = useState<Case[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCase, setSelectedCase] = useState<Case | null>(null);
@@ -267,14 +271,25 @@ function PortfolioGrid() {
     return !!(caseItem.Headline_media || (caseItem.Description && caseItem.Description.length > 0));
   };
 
-  const handleCaseClick = (caseItem: Case) => {
-    if (isInteractive(caseItem)) {
-      setSelectedCase(caseItem);
+  useEffect(() => {
+    if (caseId && cases.length > 0) {
+      const caseToOpen = cases.find(c => createSlug(c.Title) === caseId);
+      if (caseToOpen) {
+        setSelectedCase(caseToOpen);
+      }
     }
-  };
+  }, [caseId, cases]);
 
   const handleClose = () => {
     setSelectedCase(null);
+    navigate('/portfolio');
+  };
+
+  const handleCaseClick = (caseItem: Case) => {
+    if (isInteractive(caseItem)) {
+      setSelectedCase(caseItem);
+      navigate(`/portfolio/${createSlug(caseItem.Title)}`);
+    }
   };
 
   useEffect(() => {
